@@ -3,6 +3,7 @@ from flask import Flask, render_template, request, session, redirect
 app = Flask(__name__)
 app.secret_key = "segredo_admin"
 
+
 evento = {
     "nome": "OPEN GRADUAÇÃO DE JIU-JITSU – 2026",
     "local": "PROJETO BOM MENINO – ITAITUBA/PA",
@@ -78,7 +79,7 @@ def admin_login():
         senha = request.form["senha"]
 
         if usuario == "CT FRANÇA" and senha == "FRANÇA123":
-            session["CT FRANÇA"] = True
+            session["admin"] = True
             return redirect("/admin")
         else:
             erro = "Usuário ou senha inválidos"
@@ -111,4 +112,5 @@ def excluir_inscricao(index):
 # ---------------- EXECUÇÃO ----------------
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
+
