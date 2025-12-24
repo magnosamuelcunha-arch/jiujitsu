@@ -179,6 +179,10 @@ import re
 import re
 from flask import send_file
 
+import re
+import zipfile
+from flask import send_file
+
 @app.route("/admin/pdf/categorias")
 def pdf_por_categoria():
     if not session.get("admin"):
@@ -195,40 +199,37 @@ def pdf_por_categoria():
     for i in inscritos:
         categorias[i["categoria"]].append(i)
 
-    arquivos = []
+    zip_path = "/tmp/pdfs_categorias.zip"
 
-    for categoria, lista in categorias.items():
-        nome_arquivo = re.sub(r'[^a-zA-Z0-9_]', '', categoria.lower().replace(" ", "_"))
-        caminho_pdf = f"/tmp/{nome_arquivo}.pdf"
+    with zipfile.ZipFile(zip_path, "w") as zipf:
+        for categoria, lista in categorias.items():
+            nome_arquivo = re.sub(r'[^a-zA-Z0-9_]', '', categoria.lower().replace(" ", "_"))
+            caminho_pdf = f"/tmp/{nome_arquivo}.pdf"
 
-        arquivos.append(caminho_pdf)
+            c = canvas.Canvas(caminho_pdf, pagesize=A4)
+            largura, altura = A4
+            y = altura - 40
 
-        c = canvas.Canvas(caminho_pdf, pagesize=A4)
-        largura, altura = A4
-        y = altura - 40
+            c.setFont("Helvetica-Bold", 14)
+            c.drawString(40, y, f"Categoria: {categoria}")
 
-        c.setFont("Helvetica-Bold", 14)
-        c.drawString(40, y, f"Categoria: {categoria}")
+            y -= 30
+            c.setFont("Helvetica", 10)
 
-        y -= 30
-        c.setFont("Helvetica", 10)
+            for inscrito in lista:
+                linha = f"{inscrito['nome']} - {inscrito['equipe']}"
+                c.drawString(40, y, linha)
+                y -= 15
 
-        for inscrito in lista:
-            linha = f"{inscrito['nome']} - {inscrito['equipe']}"
-            c.drawString(40, y, linha)
-            y -= 15
+                if y < 40:
+                    c.showPage()
+                    c.setFont("Helvetica", 10)
+                    y = altura - 40
 
-            if y < 40:
-                c.showPage()
-                c.setFont("Helvetica", 10)
-                y = altura - 40
+            c.save()
+            zipf.write(caminho_pdf, arcname=f"{nome_arquivo}.pdf")
 
-        c.save()
-
-
-    return redirect("/admin")
-
-
+    return send_file(zip_path, as_attachment=True, download_name="pdfs_por_categoria.zip")
 
 @app.route("/admin/excluir/<int:id>", methods=["POST"])
 def excluir_inscrito(id):
