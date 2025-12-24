@@ -176,6 +176,9 @@ def exportar_pdf():
 
 import re
 
+import re
+from flask import send_file
+
 @app.route("/admin/pdf/categorias")
 def pdf_por_categoria():
     if not session.get("admin"):
@@ -192,9 +195,13 @@ def pdf_por_categoria():
     for i in inscritos:
         categorias[i["categoria"]].append(i)
 
+    arquivos = []
+
     for categoria, lista in categorias.items():
         nome_arquivo = re.sub(r'[^a-zA-Z0-9_]', '', categoria.lower().replace(" ", "_"))
-        caminho_pdf = f"static/{nome_arquivo}.pdf"
+        caminho_pdf = f"/tmp/{nome_arquivo}.pdf"
+
+        arquivos.append(caminho_pdf)
 
         c = canvas.Canvas(caminho_pdf, pagesize=A4)
         largura, altura = A4
@@ -218,7 +225,11 @@ def pdf_por_categoria():
 
         c.save()
 
+    if arquivos:
+        return send_file(arquivos[0], as_attachment=False)
+
     return redirect("/admin")
+
 
 
 @app.route("/admin/excluir/<int:id>", methods=["POST"])
