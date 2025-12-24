@@ -22,14 +22,7 @@ def init_db():
     )
     """)
 
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS admin_sessions (
-        token TEXT PRIMARY KEY
-    )
-    """)
-
-    conn.commit()
-    conn.close()
+    
 
 
 app = Flask(__name__)
@@ -116,16 +109,14 @@ def admin_login():
     erro = None
 
     if request.method == "POST":
-        usuario = request.form["usuario"]
-        senha = request.form["senha"]
-
-        if usuario == "CT FRANÇA" and senha == "FRANÇA123":
+        if request.form["usuario"] == "CT FRANÇA" and request.form["senha"] == "FRANÇA123":
             session["admin"] = True
             return redirect("/admin")
         else:
             erro = "Usuário ou senha inválidos"
 
     return render_template("admin_login.html", erro=erro)
+
 
 
 
