@@ -115,6 +115,7 @@
             <th>#</th>
             <th>Nome</th>
             <th>Categoria</th>
+            <th>Faixa</th>
             <th>Equipe</th>
             <th>Ações</th>
         </tr>
@@ -123,6 +124,7 @@
             <td>{{ loop.index }}</td>
             <td>{{ inscrito.nome }}</td>
             <td>{{ inscrito.categoria }}</td>
+            <td>{{ inscrito.faixa }}</td>
             <td>{{ inscrito.equipe }}</td>
             <td>
 <form action="/admin/excluir/{{ inscrito.id }}" method="POST">

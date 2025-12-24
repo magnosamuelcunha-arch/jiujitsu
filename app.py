@@ -18,11 +18,20 @@ def init_db():
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         nome TEXT NOT NULL,
         categoria TEXT NOT NULL,
+        faixa TEXT NOT NULL DEFAULT '',
         equipe TEXT NOT NULL
     )
     """)
 
-    
+    # Verifica se a coluna faixa existe, se não existir cria
+    cursor.execute("PRAGMA table_info(inscritos)")
+    colunas = [col[1] for col in cursor.fetchall()]
+
+    if "faixa" not in colunas:
+        cursor.execute("ALTER TABLE inscritos ADD COLUMN faixa TEXT")
+
+    conn.commit()
+    conn.close()
 
 
 app = Flask(__name__)
@@ -83,12 +92,13 @@ def inscricao():
     if request.method == "POST":
         nome = request.form["nome"]
         categoria = request.form["categoria"]
+        faixa = request.form["faixa"]
         equipe = request.form["equipe"]
 
         conn = get_db_connection()
         conn.execute(
-            "INSERT INTO inscritos (nome, categoria, equipe) VALUES (?, ?, ?)",
-            (nome, categoria, equipe)
+            "INSERT INTO inscritos (nome, categoria, faix, equipe) VALUES (?, ?, ?)",
+            (nome, categoria, faixa, equipe)
         )
         conn.commit()
         conn.close()
@@ -161,7 +171,7 @@ def exportar_pdf():
     c.setFont("Helvetica", 10)
 
     for inscrito in inscritos:
-        texto = f"{inscrito['nome']} | {inscrito['categoria']} | {inscrito['equipe']}"
+        texto = f"{inscrito['nome']} | {inscrito['categoria']} | {inscrito['faixa']} | {inscrito['equipe']}"
         c.drawString(40, y, texto)
         y -= 15
 
@@ -217,7 +227,7 @@ def pdf_por_categoria():
             c.setFont("Helvetica", 10)
 
             for inscrito in lista:
-                linha = f"{inscrito['nome']} - {inscrito['equipe']}"
+                linha = f"{inscrito['nome']} - {inscrito['faixa']} - {inscrito['equipe']}"
                 c.drawString(40, y, linha)
                 y -= 15
 
