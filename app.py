@@ -11,7 +11,8 @@ def get_db_connection():
 
 
 app = Flask(__name__)
-app.secret_key = "segredo_admin"
+app.secret_key = "open-jiu-jitsu-2026-chave-super-secreta-123456"
+
 
 
 evento = {
