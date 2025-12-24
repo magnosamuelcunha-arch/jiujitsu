@@ -2,6 +2,7 @@ from flask_session import Session
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from flask import Flask, render_template, request, session, redirect
+import uuid
 from collections import defaultdict
 import sqlite3
 def get_db_connection():
@@ -114,29 +115,38 @@ def admin_login():
 
 @app.route("/admin")
 def admin():
-    if not session.get("admin"):
+    token = request.args.get("token")
+
+    if not token:
+        return redirect("/admin/login")
+
+    conn = get_db_connection()
+    valido = conn.execute(
+        "SELECT 1 FROM admin_sessions WHERE token = ?", (token,)
+    ).fetchone()
+    conn.close()
+
+    if not valido:
         return redirect("/admin/login")
 
     conn = get_db_connection()
     inscritos = conn.execute("SELECT * FROM inscritos").fetchall()
     conn.close()
 
-    return render_template("admin.html", inscritos=inscritos)
+    return render_template("admin.html", inscritos=inscritos, token=token)
+
 @app.route("/admin/logout")
 def admin_logout():
-    session.clear()
+    token = request.args.get("token")
+
+    if token:
+        conn = get_db_connection()
+        conn.execute("DELETE FROM admin_sessions WHERE token = ?", (token,))
+        conn.commit()
+        conn.close()
+
     return redirect("/admin/login")
-@app.route("/admin/excluir/<int:id>", methods=["POST"])
-def excluir_inscricao(id):
-    if not session.get("admin"):
-        return redirect("/admin/login")
 
-    conn = get_db_connection()
-    conn.execute("DELETE FROM inscritos WHERE id = ?", (id,))
-    conn.commit()
-    conn.close()
-
-    return redirect("/admin")
 
 @app.route("/admin/pdf")
 def exportar_pdf():

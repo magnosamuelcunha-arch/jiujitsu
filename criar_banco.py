@@ -11,6 +11,12 @@ CREATE TABLE IF NOT EXISTS inscritos (
     equipe TEXT NOT NULL
 )
 """)
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS admin_sessions (
+    token TEXT PRIMARY KEY
+)
+""")
+
 
 con.commit()
 con.close()
