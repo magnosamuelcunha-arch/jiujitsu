@@ -22,6 +22,8 @@ def init_db():
         equipe TEXT NOT NULL
     )
     """)
+    conn.commit()
+    conn.close()
 
     # Verifica se a coluna faixa existe, se não existir cria
     cursor.execute("PRAGMA table_info(inscritos)")
@@ -105,11 +107,8 @@ def inscricao():
 
         mensagem = "Inscrição realizada com sucesso!"
 
-    return render_template(
-        "inscricao.html",
-        evento=evento,
-        mensagem=mensagem
-    )
+    return render_template("inscricao.html", evento=evento, mensagem=mensagem)
+
 
 # ---------------- ADMIN ----------------
 
@@ -200,7 +199,7 @@ def pdf_por_categoria():
 
     conn = get_db_connection()
     inscritos = conn.execute(
-        "SELECT nome, categoria, equipe FROM inscritos"
+        "SELECT nome, categoria, faixa, equipe FROM inscritos"
     ).fetchall()
     conn.close()
 
