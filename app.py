@@ -225,6 +225,18 @@ def pdf_por_categoria():
 
     return redirect("/admin")
 
+@app.route("/admin/excluir/<int:id>", methods=["POST"])
+def excluir_inscrito(id):
+    if not session.get("admin"):
+        return redirect("/admin/login")
+
+    conn = get_db_connection()
+    conn.execute("DELETE FROM inscritos WHERE id = ?", (id,))
+    conn.commit()
+    conn.close()
+
+    return redirect("/admin")
+
 
 
 # ---------------- EXECUÇÃO ----------------

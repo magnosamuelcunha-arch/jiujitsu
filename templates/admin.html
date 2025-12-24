@@ -101,16 +101,20 @@
 <h2>PDFs por Categoria</h2>
 
 <div class="botoes-pdf">
-    {% for categoria in inscritos | map(attribute='categoria') | unique %}
-        <a class="botao-pdf"
-           href="/static/{{ categoria | lower | replace(' ', '_') }}.pdf"
-           target="_blank">
-            📄 {{ categoria }}
-        </a>
-    {% endfor %}
+    <a class="botao-pdf" href="/admin/pdf/categorias">
+        🔄 Gerar PDFs por categoria
+    </a>
 </div>
-
-
+<div style="text-align:center; margin-bottom: 20px;">
+    <a href="/admin/pdf" target="_blank" class="botao-pdf">
+        📄 Exportar PDF geral
+    </a>
+</div>
+<div style="text-align:center; margin-bottom: 20px;">
+    <a href="/admin/pdf" target="_blank" class="botao-pdf">
+        📄 Exportar PDF geral
+    </a>
+</div>
 
     {% if inscritos %}
     <table class="tabela-admin">
@@ -131,18 +135,6 @@
 <form action="/admin/excluir/{{ inscrito.id }}" method="POST">
     <button type="submit" class="btn-excluir">Excluir</button>
 </form>
-<div style="text-align:center; margin-bottom: 20px;">
-    <a href="/admin/pdf" target="_blank"
-       style="
-       background:#4CAF50;
-       color:white;
-       padding:10px 20px;
-       border-radius:6px;
-       text-decoration:none;
-       font-weight:bold;">
-       📄 Exportar PDF
-    </a>
-</div>
 
             </td>
         </tr>
